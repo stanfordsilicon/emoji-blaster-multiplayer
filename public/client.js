@@ -275,6 +275,27 @@ function enterRoom(code, mode, consensusLevel) {
   showScreen("lobby");
 }
 
+// Mirrors Moji Mojo's/Munchers' identical button -- every multiplayer game
+// in the arcade should offer the same way to invite people, not just a
+// bare room code players have to relay by hand. Feedback is the button's
+// own label swapping briefly rather than a toast system, since this app
+// doesn't have one.
+const copyCodeBtn = document.getElementById("btn-copy-code");
+if (copyCodeBtn) {
+  const defaultLabel = copyCodeBtn.textContent;
+  copyCodeBtn.addEventListener("click", async () => {
+    if (!currentRoomCode) return;
+    const url = `${window.location.origin}${window.location.pathname}?room=${currentRoomCode}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      copyCodeBtn.textContent = t("invite_link_copied");
+    } catch (e) {
+      copyCodeBtn.textContent = url;
+    }
+    setTimeout(() => { copyCodeBtn.textContent = defaultLabel; }, 2000);
+  });
+}
+
 consensusButtons.forEach((btn) => {
   btn.addEventListener("click", () => {
     if (btn.disabled || !currentRoomCode) return;
