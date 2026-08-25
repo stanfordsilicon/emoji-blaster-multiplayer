@@ -217,7 +217,7 @@ backToLaunchpadBtn.addEventListener("click", () => {
     await enterRoomFully(joinData);
     return;
   }
-  const createData = await api("create-room", { username: me.name, mode: selectedMode, playerId, code: arcadeRoomCode });
+  const createData = await api("create-room", { username: me.name, mode: selectedMode, playerId, code: arcadeRoomCode, language: arcadeLang });
   if (createData.error) return; // arcade layer is an enhancement -- leave the standalone landing screen up
   await enterRoomFully(createData);
 })();

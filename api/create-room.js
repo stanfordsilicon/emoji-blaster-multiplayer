@@ -1,6 +1,7 @@
 const { getRoom, saveRoom } = require("../lib/room-store");
 const { createRoomState, addPlayer, lobbyPayload, getScoreboard, CONSENSUS_REQUIRED } = require("../lib/game-logic");
 const { publish } = require("../lib/pusher");
+const { logEvent } = require("../lib/analytics");
 
 const CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no ambiguous chars (0/O, 1/I)
 
@@ -18,7 +19,7 @@ module.exports = async (req, res) => {
     return;
   }
 
-  const { username, mode, playerId, code: requestedCode } = req.body || {};
+  const { username, mode, playerId, code: requestedCode, language } = req.body || {};
   if (!username || !playerId) {
     res.status(400).json({ error: "username and playerId are required" });
     return;
@@ -41,7 +42,7 @@ module.exports = async (req, res) => {
   } else {
     code = await generateRoomCode();
   }
-  const room = createRoomState(code, mode, 1);
+  const room = createRoomState(code, mode, 1, language);
   addPlayer(room, playerId, username);
   await saveRoom(code, room);
 
@@ -49,6 +50,8 @@ module.exports = async (req, res) => {
     { name: "lobby-update", data: lobbyPayload(room) },
     { name: "scoreboard", data: getScoreboard(room) },
   ]);
+
+  await logEvent("room-created", { code, mode: room.mode, language: room.language, hostUsername: username });
 
   res.status(200).json({
     code,
