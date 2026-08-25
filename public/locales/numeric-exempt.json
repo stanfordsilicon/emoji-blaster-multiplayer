@@ -1,0 +1,25 @@
+{
+  "_readme": [
+    "Keys exempted from the numeric-sequence check, each with a reason.",
+    "",
+    "The validator normally fails a run when a figure in the English is missing",
+    "from a translation, because a dropped number in a factual sentence makes a",
+    "stated fact false. Spanish and Portuguese conventionally SPELL OUT small",
+    "numbers in prose -- '2 players' becomes 'dos jugadores' -- so the figure",
+    "stops being a figure while the claim stays identical.",
+    "",
+    "Keys are named here ONE AT A TIME with a written reason, so each exemption",
+    "is a deliberate decision rather than a blanket loosening. Exempt keys still",
+    "print their mismatch on every run; they just don't fail it.",
+    "",
+    "CAUTION: exempting a key removes the guard for that key in ALL languages.",
+    "If the English behind one of these changes (say 2 players becomes 4), no",
+    "check will catch a translation that keeps the old number. Re-read these by",
+    "hand when the consensus rules change.",
+    "",
+    "Verified against the English source, not against the machine translation:",
+    "the Spanish and Portuguese below state the same thresholds as the English."
+  ],
+  "consensus_desc_level1": "English '2 players'; es/pt-br spell it 'dos'/'duas'. Threshold unchanged.",
+  "consensus_desc_level2": "English '3 players'; es/pt-br spell it 'tres'/'três'. Threshold unchanged."
+}

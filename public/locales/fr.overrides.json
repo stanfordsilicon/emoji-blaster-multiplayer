@@ -1,0 +1,28 @@
+{
+  "_readme": [
+    "HUMAN OVERRIDES for fr. Hand-maintained; always wins.",
+    "",
+    "scripts/translate.mjs READS this file and merges it on top of DeepL's output.",
+    "It never writes here. Fix a bad translation by adding the key HERE, not in",
+    "fr.json, which is regenerated on every run.",
+    "",
+    "Every entry was written by Claude, not a native speaker -- see",
+    "TRANSLATION_NOTES.md. Nothing here has been verified by a human.",
+    "",
+    "Keys must match public/locales/en.json; tokens and emoji must match exactly."
+  ],
+  "back_to_launchpad": "RETOUR À LA BASE",
+  "loading": "CHARGEMENT",
+  "username_placeholder": "Ton nom",
+  "join_room_button": "Rejoindre",
+  "ready_up_button": "Je suis prêt",
+  "cancel_ready_button": "Annuler",
+  "start_now_button": "Commencer",
+  "emoji_correct": "{username} a trouvé ! (« {guess} »)",
+  "sync_progress": "Meilleure correspondance : {bestCount}/{required} joueurs — continue à taper des mots !",
+  "consensus_locked_hint": "Il faut {required} joueurs dans le salon pour choisir ce niveau",
+  "game_over_summary": "Temps écoulé ! Ton équipe a synchronisé {teamScore} emojis.",
+  "name_required_error": "Entre d'abord un nom.",
+  "room_code_required_error": "Entre un code de salon.",
+  "guess_placeholder": "Tape le mot-clé et appuie sur Entrée…"
+}

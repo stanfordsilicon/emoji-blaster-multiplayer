@@ -1,0 +1,22 @@
+{
+  "_readme": [
+    "HUMAN OVERRIDES for es. Hand-maintained; always wins.",
+    "",
+    "scripts/translate.mjs READS this file and merges it on top of DeepL's output.",
+    "It never writes here. Fix a bad translation by adding the key HERE, not in",
+    "es.json, which is regenerated on every run.",
+    "",
+    "Every entry was written by Claude, not a native speaker -- see",
+    "TRANSLATION_NOTES.md. Nothing here has been verified by a human.",
+    "",
+    "Keys must match public/locales/en.json; tokens and emoji must match exactly."
+  ],
+  "back_to_launchpad": "VOLVER A LA BASE",
+  "join_room_button": "Entrar",
+  "cancel_ready_button": "Cancelar",
+  "play_again_button": "Volver a jugar",
+  "emoji_correct": "¡{username} lo ha acertado! («{guess}»)",
+  "sync_progress": "Mejor coincidencia: {bestCount}/{required} jugadores — ¡sigue escribiendo palabras!",
+  "consensus_locked_hint": "Se necesitan {required} jugadores en la sala para elegir este nivel",
+  "game_over_summary": "¡Se acabó el tiempo! Tu equipo ha sincronizado {teamScore} emojis."
+}

@@ -1,3 +1,14 @@
+// Gated on initI18n(): the string table now arrives over the network, so
+// nothing here may run until it has loaded -- applyStaticTranslations() below
+// is the first statement and paints UI text. initI18n() never rejects, so
+// this always runs.
+//
+// Wrapping the whole file moves its top-level bindings into this callback.
+// That is safe here: client.js is the last script on the page, exposes
+// nothing on window, and index.html has no inline handlers, so nothing
+// outside this file ever referenced them.
+initI18n().then(() => {
+
 // client.js — Emoji Blaster multiplayer client (Vercel: fetch() + Pusher,
 // no persistent socket). Every former socket.emit(...) is now a fetch()
 // POST to /api/*; every former socket.on(...) is now a Pusher channel
@@ -534,4 +545,6 @@ async function submitGuess() {
 
 guessInput.addEventListener("keydown", (e) => {
   if (e.key === "Enter") submitGuess();
+});
+
 });
