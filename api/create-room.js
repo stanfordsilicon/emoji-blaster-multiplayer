@@ -7,7 +7,7 @@ const CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no ambiguous chars (0/
 
 async function generateRoomCode() {
   for (let attempt = 0; attempt < 10; attempt++) {
-    const code = Array.from({ length: 5 }, () => CODE_CHARS[Math.floor(Math.random() * CODE_CHARS.length)]).join("");
+    const code = Array.from({ length: 4 }, () => CODE_CHARS[Math.floor(Math.random() * CODE_CHARS.length)]).join("");
     if (!(await getRoom(code))) return code;
   }
   throw new Error("Could not generate a unique room code");

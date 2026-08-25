@@ -40,7 +40,7 @@
     <div class="divider" data-i18n="divider_or">or</div>
 
     <div class="button-row">
-      <input id="join-code-input" type="text" data-i18n-placeholder="join_code_placeholder" placeholder="ROOM CODE" maxlength="5" autocomplete="off">
+      <input id="join-code-input" type="text" data-i18n-placeholder="join_code_placeholder" placeholder="ROOM CODE" maxlength="4" autocomplete="off">
       <button type="button" id="join-room-btn" class="btn btn-secondary" data-i18n="join_room_button">Join</button>
     </div>
 
@@ -51,6 +51,7 @@
   <section id="screen-lobby" class="screen hidden">
     <h1 class="display" data-i18n="lobby_title">Room</h1>
     <div id="room-code-display" class="room-code"></div>
+    <button type="button" id="btn-copy-code" class="btn btn-secondary" data-i18n="copy_invite_button">📋 Copy Invite Link</button>
     <p class="hint" data-i18n="lobby_share_hint">Share this code so others can join</p>
     <p id="lobby-mode" class="mode-badge"></p>
 

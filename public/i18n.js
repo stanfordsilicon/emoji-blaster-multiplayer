@@ -51,6 +51,8 @@ const I18N_STRINGS = {
     name_required_error: "Enter a name first.",
     room_code_required_error: "Enter a room code.",
     lobby_title: "Room",
+    copy_invite_button: "📋 Copy Invite Link",
+    invite_link_copied: "Invite link copied!",
     lobby_share_hint: "Share this code so others can join",
     consensus_level1_title: "Level 1",
     consensus_level1_desc: "2 players match",
