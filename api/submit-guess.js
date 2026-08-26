@@ -64,7 +64,7 @@ module.exports = async (req, res) => {
     await publish(code, [delayedEvent]);
   }
 
-  if (analytics) await logEvent("guess-attempt", analytics);
+  if (analytics) await logEvent("guess-submitted", analytics);
 
   res.status(200).json(response);
 };

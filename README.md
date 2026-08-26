@@ -1,11 +1,14 @@
 # Emoji Blaster
 
-A typing party game: type the keyword before the emoji lands, in sync with
-your team. Everyone types freely — an emoji clears once enough distinct
-players have independently typed the same word — and the room races a 60s
-clock together, not each other. Runs entirely on Vercel: a static
-single-page frontend plus a set of serverless functions backed by Redis
-(room state) and Pusher Channels (realtime broadcast).
+A typing party game: type a word for the falling emoji before it lands, in
+sync with your team. There's no stored "correct answer" for any emoji —
+the point of the game is to generate that word data, not check guesses
+against a dictionary. Everyone types freely, and an emoji clears once
+enough distinct players have independently typed the *same word as each
+other*; only those matching players score. The room races a 60s clock
+together, not each other. Runs entirely on Vercel: a static single-page
+frontend plus a set of serverless functions backed by Redis (room state),
+Pusher Channels (realtime broadcast), and MongoDB (gameplay analytics).
 
 ## Why serverless + Redis + Pusher, not a Socket.io server
 
@@ -20,12 +23,17 @@ Channels instead of a socket connection.
 ## What's in here
 
 ```
-emojiDB.js          ← emoji → keyword list used by the game (PLACEHOLDER — see note below)
 lib/
   room-store.js      ← Redis read/write/prune helpers for room state, atomic
                          compare-and-swap via a Lua script (see note below)
   game-logic.js       ← pure game rules — spawning, consensus matching, scoring
-  pusher.js            ← shared Pusher server SDK instance + publish helper
+  emoji-source.js       ← fetches the live per-language emoji set from
+                            qmoji-2's admin panel, Redis-cached, falls back
+                            to a small static list if qmoji-2 is unreachable
+  mongo-client.js         ← cached MongoDB connection (mirrors qmoji-2's)
+  analytics.js               ← logs gameplay events to MongoDB, never blocks
+                                 or fails a request if Mongo is down
+  pusher.js                    ← shared Pusher server SDK instance + publish helper
 api/
   config.js          ← GET: public Pusher key/cluster for the client
   create-room.js      ← POST: create a room
@@ -46,10 +54,16 @@ public/
   style.css             ← retro pixel-arcade theme
 ```
 
-## ⚠️ `emojiDB.js` still has placeholder keyword data
+## Where the emoji come from
 
-`emojiDB.js` was reconstructed from memory and is NOT guaranteed to match a
-verified dataset — swap it out if you have the real keyword lists.
+Blaster doesn't own an emoji list itself — it fetches one per-room from
+qmoji-2's admin-curated "Emoji Phases" system (`GET
+/api/emoji-rules?lang=xx` on the qmoji-2 deployment,
+public/unauthenticated), based on the room's language. If that's
+unreachable or returns nothing, it falls back to a small static list
+(`lib/emoji-source.js`) so the game stays playable either way. Set
+`QMOJI_ADMIN_BASE_URL` to point at the right qmoji-2 deployment
+(`http://localhost:5500` for local dev against a local qmoji-2 checkout).
 
 ## Deploying on Vercel
 
@@ -72,6 +86,10 @@ verified dataset — swap it out if you have the real keyword lists.
    - `PUSHER_KEY`
    - `PUSHER_SECRET`
    - `PUSHER_CLUSTER`
+   - `MONGODB_URI` — a MongoDB connection string (no database segment needed
+     in the path; `lib/mongo-client.js` passes the database name explicitly)
+   - `QMOJI_ADMIN_BASE_URL` — the qmoji-2 deployment to pull the emoji list
+     from (e.g. `https://qmoji-2.vercel.app`)
 5. **Redeploy.**
 
 ## Running locally
@@ -86,12 +104,13 @@ Then open the URL `vercel dev` prints (defaults to `http://localhost:3000`).
 
 ## How a room works
 
-Players type keywords freely — nothing ever "locks in." Each player
-accumulates a running list of every valid keyword they've typed during the
-current round, and as soon as enough distinct players have independently
-typed the same word, the emoji clears. Nobody ever sees what anyone else
-typed until that happens — only a private "wrong" nudge to whoever
-mistyped, and a headcount of how close the room is to a match.
+Players type words freely — nothing ever "locks in," and nothing is
+checked against a stored dictionary. Each player accumulates a running list
+of everything they've typed during the current round, and as soon as
+enough distinct players have independently typed the *same word as each
+other*, the emoji clears — only those matching players score a point, not
+the whole room. Nobody ever sees what anyone else typed until that
+happens — only a headcount of how close the room is to a match.
 
 The game is timer-based (60s), not score-based: the shared team score is
 however many emoji the room synced together before time ran out.
@@ -123,6 +142,7 @@ live round — until the game ends and the room resets for a rematch.
 - Player presence is heartbeat-based (a ping every 5s, pruned after 20s of
   silence) rather than an instant disconnect signal, so a closed tab takes
   up to ~20s to be reflected for other players in the room.
-- No MongoDB/analytics persistence — dropped in the Vercel migration (it
-  was already best-effort). Key game events still log via `console.log`
-  inside each `/api` handler, visible in Vercel's function logs.
+- Double Sync shows two emoji and asks players to find a word that fits
+  both, but that's purely the players' own judgment now — there's no stored
+  data saying which word-pairs are "valid," so nothing enforces that a
+  winning word actually relates to both emoji shown.
