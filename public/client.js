@@ -131,7 +131,11 @@ async function enterRoomFully(data) {
 createRoomBtn.addEventListener("click", async () => {
   const username = getUsername();
   if (!username) return;
-  const data = await api("create-room", { username, mode: selectedMode, playerId });
+  // arcadeLang is set moments after page load by initArcadeLink() below,
+  // well before a real click can happen -- undefined here just means "no
+  // arcade party" or "no curated emoji set for that language yet," and the
+  // server falls back to its own default either way.
+  const data = await api("create-room", { username, mode: selectedMode, playerId, language: arcadeLang });
   if (data.error) {
     landingError.textContent = data.error;
     landingError.classList.remove("hidden");
@@ -217,7 +221,7 @@ backToLaunchpadBtn.addEventListener("click", () => {
     await enterRoomFully(joinData);
     return;
   }
-  const createData = await api("create-room", { username: me.name, mode: selectedMode, playerId, code: arcadeRoomCode });
+  const createData = await api("create-room", { username: me.name, mode: selectedMode, playerId, code: arcadeRoomCode, language: arcadeLang });
   if (createData.error) return; // arcade layer is an enhancement -- leave the standalone landing screen up
   await enterRoomFully(createData);
 })();

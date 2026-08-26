@@ -18,7 +18,7 @@ module.exports = async (req, res) => {
     return;
   }
 
-  const { username, mode, playerId, code: requestedCode } = req.body || {};
+  const { username, mode, playerId, code: requestedCode, language } = req.body || {};
   if (!username || !playerId) {
     res.status(400).json({ error: "username and playerId are required" });
     return;
@@ -41,7 +41,7 @@ module.exports = async (req, res) => {
   } else {
     code = await generateRoomCode();
   }
-  const room = createRoomState(code, mode, 1);
+  const room = createRoomState(code, mode, 1, typeof language === "string" ? language : undefined);
   addPlayer(room, playerId, username);
   await saveRoom(code, room);
 
