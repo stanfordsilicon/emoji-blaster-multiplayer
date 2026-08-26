@@ -8,6 +8,7 @@
 const { updateRoom, pruneStalePlayers, deleteRoom } = require("../lib/room-store");
 const { lobbyPayload, getScoreboard, allPlayersReady, startGame } = require("../lib/game-logic");
 const { publish } = require("../lib/pusher");
+const { logSessionStartIfPresent } = require("../lib/analytics");
 
 module.exports = async (req, res) => {
   if (req.method !== "POST") {
@@ -46,6 +47,7 @@ module.exports = async (req, res) => {
     await deleteRoom(code);
   } else if (result.events.length > 0) {
     await publish(code, result.events);
+    await logSessionStartIfPresent(room, result.events);
   }
 
   res.status(200).json({ ok: true });

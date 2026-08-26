@@ -1,6 +1,7 @@
 const { updateRoom, pruneStalePlayers } = require("../lib/room-store");
 const { addPlayer, lobbyPayload, getScoreboard, CONSENSUS_REQUIRED } = require("../lib/game-logic");
 const { publish } = require("../lib/pusher");
+const { logEvent } = require("../lib/analytics");
 
 module.exports = async (req, res) => {
   if (req.method !== "POST") {
@@ -30,6 +31,8 @@ module.exports = async (req, res) => {
   }
 
   await publish(code, events);
+
+  await logEvent("player-joined", { code, username, playerCount: Object.keys(room.players).length, language: room.language });
 
   res.status(200).json({
     code,

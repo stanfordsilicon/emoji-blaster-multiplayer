@@ -1,6 +1,7 @@
 const { updateRoom, pruneStalePlayers } = require("../lib/room-store");
 const { toggleReady, lobbyPayload, getScoreboard } = require("../lib/game-logic");
 const { publish } = require("../lib/pusher");
+const { logSessionStartIfPresent } = require("../lib/analytics");
 
 module.exports = async (req, res) => {
   if (req.method !== "POST") {
@@ -29,5 +30,6 @@ module.exports = async (req, res) => {
   }
 
   await publish(code, events);
+  await logSessionStartIfPresent(room, events);
   res.status(200).json({ ok: true });
 };

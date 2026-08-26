@@ -6,6 +6,7 @@
 const { updateRoom } = require("../lib/room-store");
 const { resolveGameTimeout } = require("../lib/game-logic");
 const { publish } = require("../lib/pusher");
+const { logEvent } = require("../lib/analytics");
 
 module.exports = async (req, res) => {
   if (req.method !== "POST") {
@@ -27,6 +28,16 @@ module.exports = async (req, res) => {
     return;
   }
 
-  if (events) await publish(code, events);
+  if (events) {
+    await publish(code, events);
+    const gameOver = events.find((e) => e.name === "game-over");
+    if (gameOver) {
+      await logEvent("session-end", {
+        code,
+        teamScore: gameOver.data.teamScore,
+        players: Object.values(room.players).map((p) => ({ username: p.username, score: p.score })),
+      });
+    }
+  }
   res.status(200).json({ ok: true, resolved: !!events });
 };

@@ -10,6 +10,7 @@
 const { updateRoom } = require("../lib/room-store");
 const { resolveRoundTimeout } = require("../lib/game-logic");
 const { publish } = require("../lib/pusher");
+const { logEvent } = require("../lib/analytics");
 
 module.exports = async (req, res) => {
   if (req.method !== "POST") {
@@ -31,6 +32,10 @@ module.exports = async (req, res) => {
     return;
   }
 
-  if (events) await publish(code, events);
+  if (events) {
+    await publish(code, events);
+    const miss = events.find((e) => e.name === "emoji-miss");
+    if (miss) await logEvent("round-timeout", { code, emoji: miss.data.emoji, mode: room.mode });
+  }
   res.status(200).json({ ok: true, resolved: !!events });
 };

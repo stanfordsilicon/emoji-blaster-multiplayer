@@ -1,6 +1,7 @@
 const { getRoom, saveRoomCAS } = require("../lib/room-store");
 const { handleSubmitGuess } = require("../lib/game-logic");
 const { publish } = require("../lib/pusher");
+const { logEvent } = require("../lib/analytics");
 
 const MAX_CAS_ATTEMPTS = 3;
 
@@ -56,12 +57,14 @@ module.exports = async (req, res) => {
     return;
   }
 
-  const { immediateEvents, delayedEvent, response } = result;
+  const { immediateEvents, delayedEvent, response, analytics } = result;
   await publish(code, immediateEvents);
   if (delayedEvent) {
     await sleep(700); // matches the original round-complete pacing pause
     await publish(code, [delayedEvent]);
   }
+
+  if (analytics) await logEvent("guess-attempt", analytics);
 
   res.status(200).json(response);
 };
