@@ -42,7 +42,7 @@ module.exports = async (req, res) => {
   } else {
     code = await generateRoomCode();
   }
-  const room = createRoomState(code, mode, 1, language);
+  const room = createRoomState(code, mode, 1, typeof language === "string" ? language : undefined);
   addPlayer(room, playerId, username);
   await saveRoom(code, room);
 

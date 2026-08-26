@@ -1,0 +1,22 @@
+{
+  "_readme": [
+    "HUMAN OVERRIDES for pt-pt. Hand-maintained; always wins.",
+    "",
+    "scripts/translate.mjs READS this file and merges it on top of DeepL's output.",
+    "It never writes here. Fix a bad translation by adding the key HERE, not in",
+    "pt-pt.json, which is regenerated on every run.",
+    "",
+    "Every entry was written by Claude, not a native speaker -- see",
+    "TRANSLATION_NOTES.md. Nothing here has been verified by a human.",
+    "",
+    "Keys must match public/locales/en.json; tokens and emoji must match exactly."
+  ],
+  "back_to_launchpad": "VOLTAR À BASE",
+  "join_room_button": "Entrar",
+  "cancel_ready_button": "Cancelar",
+  "play_again_button": "Jogar de novo",
+  "emoji_correct": "{username} acertou! («{guess}»)",
+  "sync_progress": "Melhor correspondência: {bestCount}/{required} jogadores — continua a escrever palavras!",
+  "consensus_locked_hint": "São precisos {required} jogadores na sala para escolher este nível",
+  "game_over_summary": "Acabou o tempo! A tua equipa sincronizou {teamScore} emojis."
+}

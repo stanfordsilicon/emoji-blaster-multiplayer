@@ -1,3 +1,14 @@
+// Gated on initI18n(): the string table now arrives over the network, so
+// nothing here may run until it has loaded -- applyStaticTranslations() below
+// is the first statement and paints UI text. initI18n() never rejects, so
+// this always runs.
+//
+// Wrapping the whole file moves its top-level bindings into this callback.
+// That is safe here: client.js is the last script on the page, exposes
+// nothing on window, and index.html has no inline handlers, so nothing
+// outside this file ever referenced them.
+initI18n().then(() => {
+
 // client.js — Emoji Blaster multiplayer client (Vercel: fetch() + Pusher,
 // no persistent socket). Every former socket.emit(...) is now a fetch()
 // POST to /api/*; every former socket.on(...) is now a Pusher channel
@@ -131,7 +142,11 @@ async function enterRoomFully(data) {
 createRoomBtn.addEventListener("click", async () => {
   const username = getUsername();
   if (!username) return;
-  const data = await api("create-room", { username, mode: selectedMode, playerId });
+  // arcadeLang is set moments after page load by initArcadeLink() below,
+  // well before a real click can happen -- undefined here just means "no
+  // arcade party" or "no curated emoji set for that language yet," and the
+  // server falls back to its own default either way.
+  const data = await api("create-room", { username, mode: selectedMode, playerId, language: arcadeLang });
   if (data.error) {
     landingError.textContent = data.error;
     landingError.classList.remove("hidden");
@@ -534,4 +549,6 @@ async function submitGuess() {
 
 guessInput.addEventListener("keydown", (e) => {
   if (e.key === "Enter") submitGuess();
+});
+
 });
