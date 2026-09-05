@@ -159,6 +159,7 @@
       lang: params.get("lang"),
       player: params.get("player"),
       uiLang: params.get("uiLang"),
+      mode: params.get("mode"),
     };
   }
 
@@ -198,15 +199,17 @@
       lang: params.lang || room.language,
       uiLang: params.uiLang,
       playerId: params.player,
+      mode: params.mode,
     };
   }
 
-  function launchUrl(baseUrl, roomCode, lang, playerId, uiLang) {
+  function launchUrl(baseUrl, roomCode, lang, playerId, uiLang, mode) {
     var url = new URL(baseUrl);
     if (roomCode) url.searchParams.set("room", roomCode);
     if (lang) url.searchParams.set("lang", lang);
     if (playerId) url.searchParams.set("player", playerId);
     if (uiLang) url.searchParams.set("uiLang", uiLang);
+    if (mode) url.searchParams.set("mode", mode);
     return url.toString();
   }
 

@@ -214,6 +214,15 @@ backToLaunchpadBtn.addEventListener("click", () => {
   arcadeUiLang = arcade.uiLang;
   arcadePlayerId = arcade.playerId;
 
+  // The homescreen's Blaster cabinet can pass ?mode= for whichever mode the
+  // launching player picked there. Only relevant to the create-room path
+  // below (joiners inherit the room's mode); a missing or unrecognized
+  // value leaves selectedMode at its "sync" default.
+  if (arcade.mode && modeButtons.some((b) => b.dataset.mode === arcade.mode)) {
+    selectedMode = arcade.mode;
+    modeButtons.forEach((b) => b.classList.toggle("active", b.dataset.mode === arcade.mode));
+  }
+
   const me = (arcade.room.players || []).find((p) => p.playerId === arcadePlayerId);
   if (!me) {
     // A raw game link was opened directly (not routed through the
