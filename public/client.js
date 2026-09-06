@@ -146,6 +146,26 @@ createRoomBtn.addEventListener("click", async () => {
   // well before a real click can happen -- undefined here just means "no
   // arcade party" or "no curated emoji set for that language yet," and the
   // server falls back to its own default either way.
+  if (arcadeRoomCode) {
+    // Arrived from an arcade party -- everyone who launched Blaster from
+    // that same party should land in one shared room under the party's own
+    // code, without a second code to share. Try joining a room already
+    // opened under it first, and only seed a fresh one under it (in
+    // whichever mode is selected here) if nobody has yet.
+    const joinData = await api("join-room", { code: arcadeRoomCode, username, playerId });
+    if (!joinData.error) {
+      await enterRoomFully(joinData);
+      return;
+    }
+    const createData = await api("create-room", { username, mode: selectedMode, playerId, code: arcadeRoomCode, language: arcadeLang });
+    if (createData.error) {
+      landingError.textContent = createData.error;
+      landingError.classList.remove("hidden");
+      return;
+    }
+    await enterRoomFully(createData);
+    return;
+  }
   const data = await api("create-room", { username, mode: selectedMode, playerId, language: arcadeLang });
   if (data.error) {
     landingError.textContent = data.error;
@@ -234,16 +254,13 @@ backToLaunchpadBtn.addEventListener("click", () => {
     return;
   }
 
-  // Known party member -- skip the manual entry screen entirely.
+  // Known party member -- prefill their name so they don't have to retype
+  // it, but leave the landing screen up rather than silently skipping it:
+  // the mode buttons above are the actual decision for what the whole party
+  // plays, and whoever creates the room (createRoomBtn, below) needs the
+  // chance to look at and change that selection first, not just inherit
+  // whatever the homescreen happened to send.
   usernameInput.value = me.name;
-  const joinData = await api("join-room", { code: arcadeRoomCode, username: me.name, playerId });
-  if (!joinData.error) {
-    await enterRoomFully(joinData);
-    return;
-  }
-  const createData = await api("create-room", { username: me.name, mode: selectedMode, playerId, code: arcadeRoomCode, language: arcadeLang });
-  if (createData.error) return; // arcade layer is an enhancement -- leave the standalone landing screen up
-  await enterRoomFully(createData);
 })();
 
 // ---- Heartbeat (replaces socket.io's connection/disconnect signal) ----
